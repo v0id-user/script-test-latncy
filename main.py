@@ -7,8 +7,8 @@ import websockets
 from rich.live import Live
 from rich.table import Table
 from rich.console import Console
+from datetime import datetime
 
-# Optional: Fix for interactive environments (like VS Code, IPython, etc.)
 try:
     import nest_asyncio
     nest_asyncio.apply()
@@ -106,6 +106,8 @@ async def main():
         console.print("\n[bold green]✅ Latency test completed.[/bold green]")
 
         result = {
+            "timestamp_unix": time.time(),
+            "timestamp_utc": datetime.now(datetime.UTC).isoformat() + "Z",
             "region": get_country_city_region(),
             "p50": round(p50, 2),
             "p95": round(p95, 2),
