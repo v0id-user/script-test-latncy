@@ -106,7 +106,7 @@ async def main():
         console.print("\n[bold green]✅ Latency test completed.[/bold green]")
 
         result = {
-            "region": get_country(),
+            "region": get_country_city_region(),
             "p50": round(p50, 2),
             "p95": round(p95, 2),
             "p99": round(p99, 2),
