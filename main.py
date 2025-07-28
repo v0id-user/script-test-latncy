@@ -15,11 +15,28 @@ try:
 except ImportError:
     pass
 
+import json
+import urllib.request
+
+
 ENDPOINT = "wss://edge-do-latency-test-19aca.v0id.me/"
 PING_INTERVAL = 1
 TEST_DURATION = 30  # seconds
 latencies = []
 console = Console()
+
+def get_country() -> str:
+    try:
+        url = f"http://ip-api.com/json"
+        with urllib.request.urlopen(url, timeout=5) as response:
+            data = json.load(response)
+            if data.get("status") == "success":
+                return data.get("country", "Unknown")
+            else:
+                return f"Error: {data.get('message', 'Unknown error')}"
+    except Exception as e:
+        return f"Request failed: {e}"
+
 
 def percentile(data, percent):
     if not data:
@@ -77,7 +94,27 @@ async def main():
 
         sender.cancel()
         receiver.cancel()
+
+        # Final stats
+        p50 = statistics.median(latencies)
+        p95 = percentile(latencies, 95)
+        p99 = percentile(latencies, 99)
+        sample_count = len(latencies)
+
+        # Display table one last time
+        console.print(create_table())
         console.print("\n[bold green]✅ Latency test completed.[/bold green]")
+
+        result = {
+            "region": get_country(),
+            "p50": round(p50, 2),
+            "p95": round(p95, 2),
+            "p99": round(p99, 2),
+            "samples": sample_count
+        }
+        print("\n📤 [Raw Output for Log/Copy]")
+        print(json.dumps(result, indent=2))
+
 
 # Run it safely in all environments
 if __name__ == "__main__":
