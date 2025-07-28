@@ -25,13 +25,13 @@ TEST_DURATION = 30  # seconds
 latencies = []
 console = Console()
 
-def get_country() -> str:
+def get_country_city_region() -> str:
     try:
         url = f"http://ip-api.com/json"
         with urllib.request.urlopen(url, timeout=5) as response:
             data = json.load(response)
             if data.get("status") == "success":
-                return data.get("country", "Unknown")
+                return f"{data.get('country', 'Unknown')}, {data.get('city', 'Unknown')}, {data.get('regionName', 'Unknown')}"
             else:
                 return f"Error: {data.get('message', 'Unknown error')}"
     except Exception as e:
